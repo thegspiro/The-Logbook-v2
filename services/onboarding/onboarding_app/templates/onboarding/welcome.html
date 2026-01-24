@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Welcome to {{ APP_NAME }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Additional styles for welcome page */
+    body {
+        background: white;
+    }
+
+    .welcome-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    /* Ensure animations respect prefers-reduced-motion */
+    @media (prefers-reduced-motion: no-preference) {
+        .fade-in-element {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .delay-1 { animation-delay: 0.5s; }
+        .delay-2 { animation-delay: 1.0s; }
+        .delay-3 { animation-delay: 1.5s; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in-element {
+            opacity: 1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="welcome-container">
+    <div class="max-w-4xl w-full text-center">
+        {% if onboarding_completed %}
+            <!-- Onboarding already completed -->
+            <div class="fade-in-element">
+                <h1 class="text-5xl font-bold text-gray-900 mb-6">
+                    Welcome Back to {{ organization_name }}!
+                </h1>
+                <p class="text-xl text-gray-600 mb-8">
+                    Your onboarding is already complete. The Logbook is ready to use.
+                </p>
+                <a href="/admin/" class="btn-primary inline-block" aria-label="Go to Admin Dashboard">
+                    Go to Dashboard
+                </a>
+            </div>
+        {% else %}
+            <!-- Welcome content with sequential fade-in -->
+            <div class="space-y-8">
+                <!-- Logo/Title -->
+                <div class="fade-in-element">
+                    <h1 class="text-6xl font-bold mb-4" style="color: var(--color-primary);">
+                        Welcome to The Logbook
+                    </h1>
+                </div>
+
+                <!-- Description -->
+                <div class="fade-in-element delay-1">
+                    <p class="text-2xl text-gray-700 mb-4">
+                        Your comprehensive fire department management platform
+                    </p>
+                    <div class="max-w-2xl mx-auto text-left bg-gray-50 p-6 rounded-lg border-2 border-gray-200">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-900">Core Components:</h2>
+                        <ul class="space-y-2 text-gray-700">
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 mr-2 mt-0.5 flex-shrink-0" style="color: var(--color-primary);" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span><strong>Personnel Management</strong> - Track members, certifications, and availability</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 mr-2 mt-0.5 flex-shrink-0" style="color: var(--color-primary);" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span><strong>Incident Reporting</strong> - Document calls and maintain records</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 mr-2 mt-0.5 flex-shrink-0" style="color: var(--color-primary);" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span><strong>Equipment Tracking</strong> - Manage apparatus, gear, and inventory</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 mr-2 mt-0.5 flex-shrink-0" style="color: var(--color-primary);" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span><strong>Training & Scheduling</strong> - Coordinate drills and shift assignments</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 mr-2 mt-0.5 flex-shrink-0" style="color: var(--color-primary);" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span><strong>Communications</strong> - Internal messaging and notifications</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Start Button -->
+                <div class="fade-in-element delay-2">
+                    {% if has_in_progress %}
+                        <p class="text-lg text-gray-600 mb-4">
+                            You have an onboarding session in progress at step {{ current_step }} of 8.
+                        </p>
+                        <div class="space-x-4">
+                            <a href="{% url 'onboarding:step' step=current_step %}"
+                               class="btn-primary inline-block"
+                               aria-label="Continue onboarding setup">
+                                Continue Setup
+                            </a>
+                            <a href="{% url 'onboarding:step' step=1 %}"
+                               class="btn-secondary inline-block"
+                               aria-label="Restart onboarding from the beginning">
+                                Start Over
+                            </a>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'onboarding:step' step=1 %}"
+                           class="btn-primary inline-block text-lg px-8 py-4"
+                           aria-label="Begin onboarding setup process">
+                            Start Setup
+                        </a>
+                    {% endif %}
+                </div>
+
+                <!-- Additional info -->
+                <div class="fade-in-element delay-3">
+                    <p class="text-sm text-gray-500 mt-8">
+                        This setup will take approximately 5-10 minutes to complete.
+                        <br>
+                        You'll configure email, security, storage, and other core settings.
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Announce page load to screen readers
+    window.addEventListener('load', function() {
+        const announcement = document.querySelector('[role="status"]');
+        if (announcement) {
+            announcement.textContent = 'Welcome page loaded. Ready to begin setup.';
+        }
+    });
+</script>
+{% endblock %}

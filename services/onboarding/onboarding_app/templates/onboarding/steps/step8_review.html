@@ -1,0 +1,144 @@
+{% extends 'onboarding/steps/step_base.html' %}
+
+{% block step_description %}
+Review your configuration and complete the setup.
+{% endblock %}
+
+{% block step_content %}
+<div class="space-y-6">
+    <!-- Summary Section -->
+    <div class="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-lg p-6">
+        <div class="flex items-center mb-4">
+            <svg class="h-8 w-8 text-green-600 mr-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            <h2 class="text-2xl font-bold text-gray-900">You're almost done!</h2>
+        </div>
+        <p class="text-gray-700">
+            Review your settings below. You can change any of these later in the admin panel.
+        </p>
+    </div>
+
+    <!-- Configuration Summary -->
+    <div class="space-y-4">
+        <!-- Organization -->
+        <div class="border border-gray-200 rounded-lg p-4">
+            <div class="flex justify-between items-start mb-3">
+                <h3 class="text-lg font-semibold text-gray-900">Organization</h3>
+                <a href="{% url 'onboarding:step' step=1 %}" class="text-sm text-primary hover:underline">Edit</a>
+            </div>
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                <div>
+                    <dt class="font-medium text-gray-700">Department Name:</dt>
+                    <dd class="text-gray-900">{{ config.organization_name|default:"Not set" }}</dd>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <dt class="font-medium text-gray-700">Theme Colors:</dt>
+                    <dd class="flex space-x-2">
+                        <span class="inline-block w-8 h-8 rounded border-2 border-gray-300" style="background-color: {{ config.primary_color|default:'#DC2626' }};" aria-label="Primary color"></span>
+                        <span class="inline-block w-8 h-8 rounded border-2 border-gray-300" style="background-color: {{ config.secondary_color|default:'#1F2937' }};" aria-label="Secondary color"></span>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+
+        <!-- Email -->
+        <div class="border border-gray-200 rounded-lg p-4">
+            <div class="flex justify-between items-start mb-3">
+                <h3 class="text-lg font-semibold text-gray-900">Email Configuration</h3>
+                <a href="{% url 'onboarding:step' step=2 %}" class="text-sm text-primary hover:underline">Edit</a>
+            </div>
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                <div>
+                    <dt class="font-medium text-gray-700">SMTP Host:</dt>
+                    <dd class="text-gray-900">{{ config.email_host|default:"Not configured" }}</dd>
+                </div>
+                <div>
+                    <dt class="font-medium text-gray-700">From Address:</dt>
+                    <dd class="text-gray-900">{{ config.email_from_address|default:"Not configured" }}</dd>
+                </div>
+            </dl>
+        </div>
+
+        <!-- Security -->
+        <div class="border border-gray-200 rounded-lg p-4">
+            <div class="flex justify-between items-start mb-3">
+                <h3 class="text-lg font-semibold text-gray-900">Security Settings</h3>
+                <a href="{% url 'onboarding:step' step=3 %}" class="text-sm text-primary hover:underline">Edit</a>
+            </div>
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                <div>
+                    <dt class="font-medium text-gray-700">Session Timeout:</dt>
+                    <dd class="text-gray-900">{{ config.session_timeout_minutes|default:60 }} minutes</dd>
+                </div>
+                <div>
+                    <dt class="font-medium text-gray-700">Min Password Length:</dt>
+                    <dd class="text-gray-900">{{ config.password_min_length|default:12 }} characters</dd>
+                </div>
+                <div>
+                    <dt class="font-medium text-gray-700">Two-Factor Auth:</dt>
+                    <dd class="text-gray-900">{% if config.require_2fa %}Required{% else %}Optional{% endif %}</dd>
+                </div>
+                <div>
+                    <dt class="font-medium text-gray-700">Allowed Domains:</dt>
+                    <dd class="text-gray-900">{{ config.allowed_domains|default:"Any domain" }}</dd>
+                </div>
+            </dl>
+        </div>
+
+        <!-- Storage -->
+        <div class="border border-gray-200 rounded-lg p-4">
+            <div class="flex justify-between items-start mb-3">
+                <h3 class="text-lg font-semibold text-gray-900">File Storage</h3>
+                <a href="{% url 'onboarding:step' step=4 %}" class="text-sm text-primary hover:underline">Edit</a>
+            </div>
+            <dl class="text-sm">
+                <div>
+                    <dt class="font-medium text-gray-700">Storage Backend:</dt>
+                    <dd class="text-gray-900 mt-1">
+                        {% if config.storage_backend == 's3' %}
+                            AWS S3 ({{ config.s3_bucket_name }} in {{ config.s3_region }})
+                        {% else %}
+                            Local Server Storage
+                        {% endif %}
+                    </dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Next Steps -->
+    <div class="border-t border-gray-200 pt-6">
+        <h3 class="text-xl font-semibold mb-4 text-gray-900">What happens next?</h3>
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <ol class="space-y-2 text-sm text-gray-700 list-decimal list-inside">
+                <li>Click "Complete Setup" to finalize your configuration</li>
+                <li>Create your first administrator account</li>
+                <li>Access the admin dashboard to:
+                    <ul class="ml-8 mt-1 space-y-1 list-disc">
+                        <li>Add additional users</li>
+                        <li>Configure modules (incidents, personnel, equipment)</li>
+                        <li>Customize forms and workflows</li>
+                        <li>Import existing data</li>
+                    </ul>
+                </li>
+                <li>Invite your team members to join</li>
+                <li>Start using The Logbook!</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Confirmation -->
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <label class="flex items-start">
+            <input type="checkbox"
+                   name="confirm_setup"
+                   required
+                   class="rounded border-gray-300 text-primary focus:ring-primary h-5 w-5 mt-0.5">
+            <span class="ml-3 text-sm text-gray-700">
+                I confirm that the configuration above is correct and I'm ready to complete the setup.
+            </span>
+        </label>
+    </div>
+</div>
+{% endblock %}

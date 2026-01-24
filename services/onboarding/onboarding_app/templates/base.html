@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}{{ APP_NAME }} - Onboarding{% endblock %}</title>
+
+    <!-- Tailwind CSS -->
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+
+    <!-- Dynamic Theme Colors -->
+    <style>
+        :root {
+            --color-primary: {{ PRIMARY_COLOR }};
+            --color-primary-light: {{ PRIMARY_COLOR_LIGHT }};
+            --color-primary-dark: {{ PRIMARY_COLOR_DARK }};
+            --color-secondary: {{ SECONDARY_COLOR }};
+            --color-secondary-light: {{ SECONDARY_COLOR_LIGHT }};
+            --color-secondary-dark: {{ SECONDARY_COLOR_DARK }};
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Screen reader announcement region -->
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
+    {% block body %}
+    <main id="main-content" role="main">
+        {% block content %}{% endblock %}
+    </main>
+    {% endblock %}
+
+    <!-- Messages/Notifications -->
+    {% if messages %}
+    <div aria-live="polite" class="fixed top-4 right-4 z-50 space-y-2">
+        {% for message in messages %}
+        <div class="bg-white border-l-4 {% if message.tags == 'error' %}border-red-500{% elif message.tags == 'success' %}border-green-500{% else %}border-blue-500{% endif %} p-4 rounded shadow-lg max-w-md"
+             role="alert">
+            <p class="font-semibold">
+                {% if message.tags == 'error' %}Error{% elif message.tags == 'success' %}Success{% else %}Notice{% endif %}
+            </p>
+            <p>{{ message }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

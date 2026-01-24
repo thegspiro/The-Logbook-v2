@@ -1,0 +1,114 @@
+{% extends 'onboarding/steps/step_base.html' %}
+
+{% block step_description %}
+Set up initial user accounts and roles for your department.
+{% endblock %}
+
+{% block step_content %}
+<div class="space-y-6">
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <p class="text-sm text-blue-800">
+            <strong>Note:</strong> You can add users after completing the onboarding process through the admin panel.
+            This step helps you plan your user structure.
+        </p>
+    </div>
+
+    <!-- User Roles Overview -->
+    <div>
+        <h2 class="text-xl font-semibold mb-4 text-gray-900">Available User Roles</h2>
+
+        <div class="space-y-3">
+            <!-- Administrator -->
+            <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6" style="color: var(--color-primary);" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="font-semibold text-gray-900">Administrator</h3>
+                        <p class="text-sm text-gray-600 mt-1">
+                            Full system access. Can manage users, configure settings, and access all modules.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Officer -->
+            <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6" style="color: var(--color-primary);" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="font-semibold text-gray-900">Officer</h3>
+                        <p class="text-sm text-gray-600 mt-1">
+                            Can create and edit incident reports, manage rosters, view analytics, and coordinate activities.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Firefighter -->
+            <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6" style="color: var(--color-primary);" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="font-semibold text-gray-900">Firefighter</h3>
+                        <p class="text-sm text-gray-600 mt-1">
+                            Can view schedules, access training materials, update availability, and view basic reports.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Staff -->
+            <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6" style="color: var(--color-primary);" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="font-semibold text-gray-900">Support Staff</h3>
+                        <p class="text-sm text-gray-600 mt-1">
+                            Limited access for administrative support, billing, and auxiliary functions.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Planning Section -->
+    <div class="border-t border-gray-200 pt-6">
+        <h2 class="text-xl font-semibold mb-4 text-gray-900">Planning Your User Structure</h2>
+
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <p class="text-sm text-gray-700 mb-3">
+                Consider the following when planning user accounts:
+            </p>
+            <ul class="text-sm text-gray-600 space-y-2 ml-4 list-disc">
+                <li>How many administrators do you need? (Recommend 2-3 for redundancy)</li>
+                <li>Will officers need different permission levels?</li>
+                <li>Should all firefighters have immediate access, or invite-only?</li>
+                <li>Do you need separate accounts for training coordinators or equipment managers?</li>
+            </ul>
+        </div>
+
+        <div class="mt-4">
+            <p class="text-sm text-gray-600">
+                You'll be able to create the first administrator account and invite other users after completing this onboarding.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

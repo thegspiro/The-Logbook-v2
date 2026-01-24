@@ -1,0 +1,117 @@
+{% extends 'onboarding/steps/step_base.html' %}
+
+{% block step_description %}
+Configure security settings to protect your department's data and ensure compliance.
+{% endblock %}
+
+{% block step_content %}
+<div class="space-y-6">
+    <!-- Session Timeout -->
+    <div>
+        <label for="session_timeout" class="block text-sm font-semibold text-gray-700 mb-2">
+            Session Timeout <span class="text-red-500" aria-label="required">*</span>
+        </label>
+        <div class="flex items-center space-x-4">
+            <input type="number"
+                   id="session_timeout"
+                   name="session_timeout"
+                   value="{{ config.session_timeout_minutes|default:60 }}"
+                   min="5"
+                   max="1440"
+                   required
+                   class="form-input w-32"
+                   aria-required="true"
+                   aria-describedby="session-help">
+            <span class="text-gray-700">minutes</span>
+        </div>
+        <p id="session-help" class="mt-1 text-sm text-gray-500">
+            Users will be automatically logged out after this period of inactivity (5-1440 minutes)
+        </p>
+    </div>
+
+    <!-- Password Requirements -->
+    <div class="border-t border-gray-200 pt-6">
+        <h2 class="text-xl font-semibold mb-4 text-gray-900">Password Requirements</h2>
+
+        <div>
+            <label for="password_min_length" class="block text-sm font-semibold text-gray-700 mb-2">
+                Minimum Password Length <span class="text-red-500" aria-label="required">*</span>
+            </label>
+            <div class="flex items-center space-x-4">
+                <input type="number"
+                       id="password_min_length"
+                       name="password_min_length"
+                       value="{{ config.password_min_length|default:12 }}"
+                       min="8"
+                       max="128"
+                       required
+                       class="form-input w-32"
+                       aria-required="true"
+                       aria-describedby="password-help">
+                <span class="text-gray-700">characters</span>
+            </div>
+            <p id="password-help" class="mt-1 text-sm text-gray-500">
+                Recommended: 12 or more characters for strong security
+            </p>
+        </div>
+
+        <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+            <p class="text-sm text-gray-700 font-semibold mb-2">Additional password requirements (always enforced):</p>
+            <ul class="text-sm text-gray-600 space-y-1 ml-4 list-disc">
+                <li>Cannot be too similar to personal information</li>
+                <li>Cannot be a commonly used password</li>
+                <li>Cannot be entirely numeric</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Two-Factor Authentication -->
+    <div class="border-t border-gray-200 pt-6">
+        <h2 class="text-xl font-semibold mb-4 text-gray-900">Two-Factor Authentication</h2>
+
+        <div class="flex items-start">
+            <input type="checkbox"
+                   id="require_2fa"
+                   name="require_2fa"
+                   {% if config.require_2fa %}checked{% endif %}
+                   class="rounded border-gray-300 text-primary focus:ring-primary h-5 w-5 mt-0.5">
+            <div class="ml-3">
+                <label for="require_2fa" class="text-sm font-semibold text-gray-700">
+                    Require Two-Factor Authentication for all users
+                </label>
+                <p class="text-sm text-gray-500 mt-1">
+                    Users will need to set up 2FA using an authenticator app (recommended for enhanced security)
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Allowed Email Domains -->
+    <div class="border-t border-gray-200 pt-6">
+        <label for="allowed_domains" class="block text-sm font-semibold text-gray-700 mb-2">
+            Allowed Email Domains (Optional)
+        </label>
+        <input type="text"
+               id="allowed_domains"
+               name="allowed_domains"
+               value="{{ config.allowed_domains }}"
+               class="form-input"
+               placeholder="yourdepartment.org, example.com"
+               aria-describedby="domains-help">
+        <p id="domains-help" class="mt-1 text-sm text-gray-500">
+            Comma-separated list. Leave blank to allow any email domain. Only emails from these domains can register.
+        </p>
+    </div>
+
+    <!-- Security Recommendations -->
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <h3 class="text-sm font-semibold text-yellow-800 mb-2">Security Best Practices:</h3>
+        <ul class="text-sm text-yellow-700 space-y-1 ml-4 list-disc">
+            <li>Enable HTTPS/SSL in production environments</li>
+            <li>Regularly review user access and permissions</li>
+            <li>Keep all software and dependencies up to date</li>
+            <li>Enable two-factor authentication for administrator accounts</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

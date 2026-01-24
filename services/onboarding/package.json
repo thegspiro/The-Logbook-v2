@@ -1,0 +1,12 @@
+{
+  "name": "the-logbook-onboarding",
+  "version": "1.0.0",
+  "description": "Tailwind CSS for The Logbook Onboarding Module",
+  "scripts": {
+    "build:css": "tailwindcss -i ./onboarding_app/static/css/input.css -o ./onboarding_app/static/css/output.css --minify",
+    "watch:css": "tailwindcss -i ./onboarding_app/static/css/input.css -o ./onboarding_app/static/css/output.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}
