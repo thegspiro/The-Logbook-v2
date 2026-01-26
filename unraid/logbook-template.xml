@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>TheLogbook</Name>
+  <Repository>ghcr.io/yourusername/the-logbook:latest</Repository>
+  <Registry>https://ghcr.io/</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>bash</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/thegspiro/The-Logbook-v2/issues</Support>
+  <Project>https://github.com/thegspiro/The-Logbook-v2</Project>
+  <Overview>The Logbook - An open-source intranet platform designed specifically for volunteer fire departments. Features include personnel management, incident reporting, equipment tracking, training &amp; scheduling, and communications. Built with Django, PostgreSQL, and Docker for easy deployment and scalability.&#xD;
+&#xD;
+IMPORTANT: This template sets up the complete stack including PostgreSQL database and Nginx reverse proxy. After first start, access http://[IP]:[PORT:80] to complete the onboarding wizard.&#xD;
+&#xD;
+After onboarding, create your first admin user with:&#xD;
+docker exec -it TheLogbook python manage.py createsuperuser</Overview>
+  <Category>Productivity: Tools:</Category>
+  <WebUI>http://[IP]:[PORT:80]</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/thegspiro/The-Logbook-v2/main/unraid/logbook-template.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/thegspiro/The-Logbook-v2/main/unraid/logbook-icon.png</Icon>
+  <ExtraParams>--restart=unless-stopped</ExtraParams>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires>This is a Docker Compose stack. Install using Docker Compose Manager plugin or follow the manual setup instructions in the documentation.</Requires>
+  <Config Name="WebUI Port" Target="80" Default="8080" Mode="tcp" Description="Port for accessing The Logbook web interface" Type="Port" Display="always" Required="true" Mask="false">8080</Config>
+  <Config Name="HTTPS Port" Target="443" Default="8443" Mode="tcp" Description="Port for HTTPS access (optional, requires SSL setup)" Type="Port" Display="advanced" Required="false" Mask="false">8443</Config>
+  <Config Name="AppData Path" Target="/app" Default="/mnt/user/appdata/logbook" Mode="rw" Description="Path to store application data" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/logbook</Config>
+  <Config Name="Database Path" Target="/var/lib/postgresql/data" Default="/mnt/user/appdata/logbook/database" Mode="rw" Description="Path to store PostgreSQL database" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/logbook/database</Config>
+  <Config Name="Media Path" Target="/app/media" Default="/mnt/user/appdata/logbook/media" Mode="rw" Description="Path to store uploaded media files" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/logbook/media</Config>
+  <Config Name="Backups Path" Target="/backups" Default="/mnt/user/backups/logbook" Mode="rw" Description="Path to store backups" Type="Path" Display="advanced" Required="false" Mask="false">/mnt/user/backups/logbook</Config>
+  <Config Name="Django Secret Key" Target="DJANGO_SECRET_KEY" Default="" Mode="" Description="Django secret key (auto-generated if left blank)" Type="Variable" Display="advanced" Required="false" Mask="true">CHANGE_ME_ON_FIRST_RUN</Config>
+  <Config Name="Database Password" Target="POSTGRES_PASSWORD" Default="" Mode="" Description="PostgreSQL database password (auto-generated if left blank)" Type="Variable" Display="advanced" Required="false" Mask="true">CHANGE_ME_ON_FIRST_RUN</Config>
+  <Config Name="Department Name" Target="ORGANIZATION_NAME" Default="Fire Department" Mode="" Description="Your fire department name" Type="Variable" Display="always" Required="false" Mask="false">My Fire Department</Config>
+  <Config Name="Primary Color" Target="PRIMARY_COLOR" Default="#DC2626" Mode="" Description="Primary theme color (hex code)" Type="Variable" Display="advanced" Required="false" Mask="false">#DC2626</Config>
+  <Config Name="Secondary Color" Target="SECONDARY_COLOR" Default="#1F2937" Mode="" Description="Secondary theme color (hex code)" Type="Variable" Display="advanced" Required="false" Mask="false">#1F2937</Config>
+  <Config Name="Allowed Hosts" Target="DJANGO_ALLOWED_HOSTS" Default="*" Mode="" Description="Comma-separated list of allowed host/domain names" Type="Variable" Display="advanced" Required="false" Mask="false">*</Config>
+  <Config Name="Time Zone" Target="TZ" Default="America/New_York" Mode="" Description="Container timezone" Type="Variable" Display="always" Required="false" Mask="false">America/New_York</Config>
+  <Config Name="Debug Mode" Target="DJANGO_DEBUG" Default="False" Mode="" Description="Enable Django debug mode (NEVER use in production)" Type="Variable" Display="advanced" Required="false" Mask="false">False</Config>
+</Container>
