@@ -1,0 +1,132 @@
+{
+  "version": "2",
+  "templates": [
+    {
+      "type": 3,
+      "title": "The Logbook",
+      "description": "Open-source fire department intranet platform with personnel management, incident reporting, equipment tracking, training, and communications modules",
+      "note": "Complete platform for volunteer fire departments. Includes PostgreSQL database, Django application, and Nginx web server. After deployment, access http://your-server-ip to complete the onboarding wizard.",
+      "categories": ["productivity", "management", "fire-department"],
+      "platform": "linux",
+      "logo": "https://raw.githubusercontent.com/thegspiro/The-Logbook-v2/main/unraid/logbook-icon.png",
+      "repository": {
+        "url": "https://github.com/thegspiro/The-Logbook-v2",
+        "stackfile": "unraid/docker-compose.portainer.yml"
+      },
+      "env": [
+        {
+          "name": "DJANGO_SECRET_KEY",
+          "label": "Django Secret Key",
+          "description": "Secret key for Django (generate with: openssl rand -base64 50). CRITICAL: Change this before deployment!",
+          "default": "CHANGE_ME_GENERATE_A_RANDOM_SECRET_KEY"
+        },
+        {
+          "name": "POSTGRES_PASSWORD",
+          "label": "Database Password",
+          "description": "PostgreSQL database password (generate with: openssl rand -base64 32). CRITICAL: Change this before deployment!",
+          "default": "CHANGE_ME_GENERATE_A_STRONG_PASSWORD"
+        },
+        {
+          "name": "DJANGO_ALLOWED_HOSTS",
+          "label": "Allowed Hosts",
+          "description": "Comma-separated list of allowed hostnames/IPs (e.g., 192.168.1.100,mydomain.com)",
+          "default": "*"
+        },
+        {
+          "name": "APP_NAME",
+          "label": "Application Name",
+          "description": "Name of your logbook application",
+          "default": "The Logbook"
+        },
+        {
+          "name": "ORGANIZATION_NAME",
+          "label": "Organization Name",
+          "description": "Your fire department or organization name",
+          "default": "Volunteer Fire Company"
+        },
+        {
+          "name": "PRIMARY_COLOR",
+          "label": "Primary Color",
+          "description": "Primary theme color (hex code)",
+          "default": "#DC2626"
+        },
+        {
+          "name": "SECONDARY_COLOR",
+          "label": "Secondary Color",
+          "description": "Secondary theme color (hex code)",
+          "default": "#1F2937"
+        },
+        {
+          "name": "TZ",
+          "label": "Timezone",
+          "description": "Container timezone (e.g., America/New_York)",
+          "default": "America/New_York"
+        },
+        {
+          "name": "HTTP_PORT",
+          "label": "HTTP Port",
+          "description": "Port for HTTP access",
+          "default": "80"
+        },
+        {
+          "name": "HTTPS_PORT",
+          "label": "HTTPS Port",
+          "description": "Port for HTTPS access (requires SSL setup)",
+          "default": "443"
+        },
+        {
+          "name": "APP_PORT",
+          "label": "Application Port",
+          "description": "Django application port (usually 8000)",
+          "default": "8000"
+        },
+        {
+          "name": "POSTGRES_DB",
+          "label": "Database Name",
+          "description": "PostgreSQL database name",
+          "default": "logbook_db"
+        },
+        {
+          "name": "POSTGRES_USER",
+          "label": "Database User",
+          "description": "PostgreSQL database username",
+          "default": "logbook_user"
+        },
+        {
+          "name": "DJANGO_DEBUG",
+          "label": "Debug Mode",
+          "description": "Enable Django debug mode (NEVER use True in production!)",
+          "default": "False",
+          "select": [
+            {
+              "text": "False (Production)",
+              "value": "False",
+              "default": true
+            },
+            {
+              "text": "True (Development Only)",
+              "value": "True"
+            }
+          ]
+        },
+        {
+          "name": "DEFAULT_STORAGE_BACKEND",
+          "label": "Storage Backend",
+          "description": "File storage backend",
+          "default": "local",
+          "select": [
+            {
+              "text": "Local Storage",
+              "value": "local",
+              "default": true
+            },
+            {
+              "text": "AWS S3",
+              "value": "s3"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

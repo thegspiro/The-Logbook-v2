@@ -52,12 +52,64 @@ This XML file allows The Logbook to be added to Unraid's Community Applications 
 - Icon and description included
 - Category: Productivity/Tools
 
-**Note:** This template is for future Community Applications submission. For now, use Docker Compose Manager for installation.
+**Note:** This template is for future Community Applications submission. For now, use Docker Compose Manager or Portainer for installation.
+
+---
+
+### 🐋 docker-compose.portainer.yml
+**Portainer-optimized Docker Compose file**
+
+Specifically designed for Portainer deployment:
+- ✅ Uses Docker volumes (better for Portainer management)
+- ✅ Includes Portainer-specific labels
+- ✅ Named volumes for easy identification
+- ✅ Compatible with Portainer's web editor
+- ✅ Ready for Portainer templates
+- ✅ Health checks for monitoring
+
+**Usage in Portainer:**
+1. Stacks → Add Stack
+2. Upload this file or paste in web editor
+3. Add environment variables
+4. Deploy
+
+---
+
+### 📦 portainer-stack-template.json
+**Portainer App Template**
+
+JSON template for Portainer's template library:
+- Pre-configured environment variables
+- Dropdown selections for common options
+- Default values included
+- Comprehensive descriptions
+- One-click deployment ready
+
+**Import to Portainer:**
+1. Settings → App Templates
+2. Upload this JSON file
+3. Template appears in Portainer library
+4. Deploy with one click
+
+---
+
+### 🐋 PORTAINER_INSTALL.md
+**Complete Portainer deployment guide**
+
+Comprehensive step-by-step guide for Portainer users:
+- Installing Portainer on Unraid
+- Deploying The Logbook stack
+- Managing containers via web UI
+- Real-time logs and monitoring
+- Backups through Portainer
+- Updates and maintenance
+- Troubleshooting
+- Comparison with Docker Compose Manager
 
 ---
 
 ### 📘 COMPOSE_INSTALL.md
-**Complete installation guide for Unraid**
+**Complete installation guide for Docker Compose Manager**
 
 Comprehensive step-by-step guide covering:
 - Docker Compose Manager installation
@@ -114,9 +166,67 @@ chmod +x scripts/unraid-setup.sh
 
 See [COMPOSE_INSTALL.md](COMPOSE_INSTALL.md) for detailed instructions.
 
+### Method 3: Portainer (Best GUI Experience)
+
+1. **Install Portainer** from Community Applications
+
+2. **Clone and Configure**:
+   ```bash
+   cd /mnt/user/appdata
+   git clone https://github.com/thegspiro/The-Logbook-v2.git
+   cd The-Logbook-v2
+   cp unraid/.env.unraid.example .env
+   nano .env  # Edit configuration
+   ```
+
+3. **Deploy in Portainer**:
+   - Access Portainer: `http://your-unraid-ip:9000`
+   - Go to **Stacks** → **Add stack**
+   - Name: `the-logbook`
+   - Choose "Web editor" or "Upload"
+   - Paste/upload `unraid/docker-compose.portainer.yml`
+   - Add environment variables from your `.env` file
+   - Click "Deploy the stack"
+
+4. **Complete Setup**:
+   - Access: `http://your-unraid-ip`
+   - Follow onboarding wizard
+
+See [PORTAINER_INSTALL.md](PORTAINER_INSTALL.md) for detailed instructions.
+
 ---
 
-## Key Differences: Standard vs Unraid
+## Key Differences: Standard vs Unraid vs Portainer
+
+| Feature | Standard | Unraid (Direct Paths) | Portainer (Volumes) |
+|---------|----------|----------------------|---------------------|
+| **Volumes** | Docker volumes | Direct path mapping | Named Docker volumes |
+| **Paths** | `/app`, `/var/lib/postgresql` | `/mnt/user/appdata/logbook/*` | Docker managed volumes |
+| **Compose File** | `docker-compose.yml` | `docker-compose.unraid.yml` | `docker-compose.portainer.yml` |
+| **Management** | Command line | Compose Manager | Portainer UI |
+| **Backups** | Manual | Scripts + paths | Portainer + scripts |
+| **Best For** | Development | Unraid integration | GUI management |
+
+---
+
+## Installation Method Comparison
+
+| Method | Difficulty | Best For | Features |
+|--------|-----------|----------|----------|
+| **Automated Script** | ⭐ Easy | Quick setup | Automated configuration |
+| **Docker Compose Manager** | ⭐⭐ Medium | Unraid users | Simple GUI, low resources |
+| **Portainer** | ⭐⭐ Medium | Power users | Advanced GUI, monitoring |
+| **Command Line** | ⭐⭐⭐ Advanced | CLI experts | Maximum control |
+
+**Recommendation:**
+- **New to Docker?** Use Automated Script
+- **Want simplicity?** Use Docker Compose Manager
+- **Want rich GUI?** Use Portainer
+- **Advanced user?** Use Command Line
+
+---
+
+## Key Differences: Deployment Types
 
 | Feature | Standard | Unraid Version |
 |---------|----------|----------------|
