@@ -1,0 +1,140 @@
+version: '3.8'
+
+# The Logbook - Portainer Optimized Docker Compose
+# This compose file is optimized for Portainer deployment with Docker volumes
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: logbook_db
+    restart: unless-stopped
+    volumes:
+      # Using Docker volumes for Portainer compatibility
+      - db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-logbook_db}
+      - POSTGRES_USER=${POSTGRES_USER:-logbook_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - TZ=${TZ:-America/New_York}
+    networks:
+      - logbook_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-logbook_user} -d ${POSTGRES_DB:-logbook_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    labels:
+      # Portainer labels for better organization
+      - "com.portainer.logbook.component=database"
+      - "com.portainer.logbook.description=PostgreSQL Database"
+
+  onboarding:
+    # NOTE: Replace with your built image or use build context
+    # image: ghcr.io/yourusername/the-logbook:latest
+    build:
+      context: ../services/onboarding
+      dockerfile: Dockerfile
+    image: logbook_onboarding:latest
+    container_name: logbook_onboarding
+    restart: unless-stopped
+    volumes:
+      # Using Docker volumes for easier management in Portainer
+      - app_data:/app
+      - static_data:/app/staticfiles
+      - media_data:/app/media
+    environment:
+      # Django Settings
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-*}
+
+      # Database Connection
+      - POSTGRES_DB=${POSTGRES_DB:-logbook_db}
+      - POSTGRES_USER=${POSTGRES_USER:-logbook_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+
+      # Application Settings
+      - APP_NAME=${APP_NAME:-The Logbook}
+      - PRIMARY_COLOR=${PRIMARY_COLOR:-#DC2626}
+      - SECONDARY_COLOR=${SECONDARY_COLOR:-#1F2937}
+      - TZ=${TZ:-America/New_York}
+
+      # Storage Settings
+      - DEFAULT_STORAGE_BACKEND=${DEFAULT_STORAGE_BACKEND:-local}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - logbook_network
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    labels:
+      - "com.portainer.logbook.component=application"
+      - "com.portainer.logbook.description=Django Application Server"
+
+  nginx:
+    image: nginx:alpine
+    container_name: logbook_nginx
+    restart: unless-stopped
+    volumes:
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_data:/static:ro
+      - media_data:/media:ro
+      # Uncomment for SSL certificates
+      # - ssl_certs:/etc/nginx/certs:ro
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    depends_on:
+      - onboarding
+    networks:
+      - logbook_network
+    labels:
+      - "com.portainer.logbook.component=webserver"
+      - "com.portainer.logbook.description=Nginx Reverse Proxy"
+
+networks:
+  logbook_network:
+    driver: bridge
+    name: logbook_network
+    labels:
+      - "com.portainer.logbook.network=main"
+
+volumes:
+  db_data:
+    name: logbook_db_data
+    labels:
+      - "com.portainer.logbook.volume=database"
+  app_data:
+    name: logbook_app_data
+    labels:
+      - "com.portainer.logbook.volume=application"
+  static_data:
+    name: logbook_static_data
+    labels:
+      - "com.portainer.logbook.volume=static"
+  media_data:
+    name: logbook_media_data
+    labels:
+      - "com.portainer.logbook.volume=media"
+  # ssl_certs:
+  #   name: logbook_ssl_certs
+  #   labels:
+  #     - "com.portainer.logbook.volume=certificates"
+
+# Portainer-specific features:
+# - All volumes are named for easy identification
+# - Labels help organize resources in Portainer UI
+# - Health checks enable health monitoring in Portainer
+# - Network is explicitly named for visibility
+# - Environment variables use defaults for easier deployment
+#
+# To deploy in Portainer:
+# 1. Go to Stacks → Add Stack
+# 2. Name: the-logbook
+# 3. Choose "Web editor" or "Upload"
+# 4. Paste this file or upload it
+# 5. Add environment variables (see PORTAINER_INSTALL.md)
+# 6. Click "Deploy the stack"

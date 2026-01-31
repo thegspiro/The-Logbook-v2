@@ -1,0 +1,153 @@
+{% extends 'onboarding/steps/step_base.html' %}
+
+{% block step_description %}
+Choose where to store files, documents, and media uploads.
+{% endblock %}
+
+{% block step_content %}
+<div class="space-y-6">
+    <!-- Storage Backend Selection -->
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-3">
+            Storage Backend <span class="text-red-500" aria-label="required">*</span>
+        </label>
+
+        <div class="space-y-3">
+            <!-- Local Storage Option -->
+            <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary {% if config.storage_backend == 'local' or not config.storage_backend %}border-primary bg-blue-50{% else %}border-gray-200{% endif %}">
+                <input type="radio"
+                       name="storage_backend"
+                       value="local"
+                       {% if config.storage_backend == 'local' or not config.storage_backend %}checked{% endif %}
+                       class="mt-1 h-5 w-5 text-primary focus:ring-primary"
+                       onchange="toggleStorageOptions()">
+                <div class="ml-3">
+                    <span class="font-semibold text-gray-900">Local Storage</span>
+                    <p class="text-sm text-gray-600 mt-1">
+                        Store files directly on the server. Best for self-hosted deployments with adequate disk space.
+                    </p>
+                    <div class="mt-2 text-xs text-gray-500">
+                        <strong>Pros:</strong> Simple, no external dependencies, free<br>
+                        <strong>Cons:</strong> Limited by server storage, not suitable for distributed systems
+                    </div>
+                </div>
+            </label>
+
+            <!-- AWS S3 Option -->
+            <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-primary {% if config.storage_backend == 's3' %}border-primary bg-blue-50{% else %}border-gray-200{% endif %}">
+                <input type="radio"
+                       name="storage_backend"
+                       value="s3"
+                       {% if config.storage_backend == 's3' %}checked{% endif %}
+                       class="mt-1 h-5 w-5 text-primary focus:ring-primary"
+                       onchange="toggleStorageOptions()">
+                <div class="ml-3">
+                    <span class="font-semibold text-gray-900">Amazon S3</span>
+                    <p class="text-sm text-gray-600 mt-1">
+                        Store files in AWS S3 cloud storage. Scalable and reliable for production deployments.
+                    </p>
+                    <div class="mt-2 text-xs text-gray-500">
+                        <strong>Pros:</strong> Unlimited storage, high availability, CDN integration<br>
+                        <strong>Cons:</strong> Requires AWS account, ongoing costs
+                    </div>
+                </div>
+            </label>
+        </div>
+    </div>
+
+    <!-- S3 Configuration (shown only when S3 is selected) -->
+    <div id="s3-config" class="border-t border-gray-200 pt-6 {% if config.storage_backend != 's3' %}hidden{% endif %}">
+        <h2 class="text-xl font-semibold mb-4 text-gray-900">AWS S3 Configuration</h2>
+
+        <div class="space-y-4">
+            <!-- Bucket Name -->
+            <div>
+                <label for="s3_bucket_name" class="block text-sm font-semibold text-gray-700 mb-2">
+                    S3 Bucket Name <span class="text-red-500" aria-label="required">*</span>
+                </label>
+                <input type="text"
+                       id="s3_bucket_name"
+                       name="s3_bucket_name"
+                       value="{{ config.s3_bucket_name }}"
+                       class="form-input"
+                       placeholder="my-fire-dept-logbook"
+                       aria-describedby="bucket-help">
+                <p id="bucket-help" class="mt-1 text-sm text-gray-500">
+                    The name of your S3 bucket (must be globally unique)
+                </p>
+            </div>
+
+            <!-- Region -->
+            <div>
+                <label for="s3_region" class="block text-sm font-semibold text-gray-700 mb-2">
+                    AWS Region
+                </label>
+                <select id="s3_region"
+                        name="s3_region"
+                        class="form-input">
+                    <option value="us-east-1" {% if config.s3_region == 'us-east-1' %}selected{% endif %}>US East (N. Virginia)</option>
+                    <option value="us-east-2" {% if config.s3_region == 'us-east-2' %}selected{% endif %}>US East (Ohio)</option>
+                    <option value="us-west-1" {% if config.s3_region == 'us-west-1' %}selected{% endif %}>US West (N. California)</option>
+                    <option value="us-west-2" {% if config.s3_region == 'us-west-2' %}selected{% endif %}>US West (Oregon)</option>
+                    <option value="eu-west-1" {% if config.s3_region == 'eu-west-1' %}selected{% endif %}>EU (Ireland)</option>
+                    <option value="eu-central-1" {% if config.s3_region == 'eu-central-1' %}selected{% endif %}>EU (Frankfurt)</option>
+                    <option value="ap-southeast-1" {% if config.s3_region == 'ap-southeast-1' %}selected{% endif %}>Asia Pacific (Singapore)</option>
+                    <option value="ap-northeast-1" {% if config.s3_region == 'ap-northeast-1' %}selected{% endif %}>Asia Pacific (Tokyo)</option>
+                </select>
+            </div>
+
+            <!-- Access Key -->
+            <div>
+                <label for="s3_access_key" class="block text-sm font-semibold text-gray-700 mb-2">
+                    AWS Access Key ID <span class="text-red-500" aria-label="required">*</span>
+                </label>
+                <input type="text"
+                       id="s3_access_key"
+                       name="s3_access_key"
+                       class="form-input font-mono"
+                       placeholder="AKIAIOSFODNN7EXAMPLE"
+                       autocomplete="off">
+                <p class="mt-1 text-sm text-gray-500">
+                    Your AWS IAM access key (encrypted before storage)
+                </p>
+            </div>
+
+            <!-- Secret Key -->
+            <div>
+                <label for="s3_secret_key" class="block text-sm font-semibold text-gray-700 mb-2">
+                    AWS Secret Access Key <span class="text-red-500" aria-label="required">*</span>
+                </label>
+                <input type="password"
+                       id="s3_secret_key"
+                       name="s3_secret_key"
+                       class="form-input font-mono"
+                       placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+                       autocomplete="off">
+                <p class="mt-1 text-sm text-gray-500">
+                    Your AWS IAM secret key (encrypted before storage)
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <p class="text-sm text-blue-800">
+                <strong>Tip:</strong> Create an IAM user with S3-only permissions for enhanced security.
+                Required permissions: s3:PutObject, s3:GetObject, s3:DeleteObject, s3:ListBucket
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleStorageOptions() {
+        const s3Config = document.getElementById('s3-config');
+        const selectedBackend = document.querySelector('input[name="storage_backend"]:checked').value;
+
+        if (selectedBackend === 's3') {
+            s3Config.classList.remove('hidden');
+        } else {
+            s3Config.classList.add('hidden');
+        }
+    }
+</script>
+{% endblock %}

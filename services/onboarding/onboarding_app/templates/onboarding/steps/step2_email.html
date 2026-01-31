@@ -1,0 +1,124 @@
+{% extends 'onboarding/steps/step_base.html' %}
+
+{% block step_description %}
+Configure your email settings for system notifications, password resets, and communications.
+{% endblock %}
+
+{% block step_content %}
+<div class="space-y-6">
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <p class="text-sm text-blue-800">
+            <strong>Note:</strong> Email configuration is optional but recommended. You can skip this step and configure it later in the admin panel.
+        </p>
+    </div>
+
+    <!-- Email Host -->
+    <div>
+        <label for="email_host" class="block text-sm font-semibold text-gray-700 mb-2">
+            SMTP Server Host
+        </label>
+        <input type="text"
+               id="email_host"
+               name="email_host"
+               value="{{ config.email_host }}"
+               class="form-input"
+               placeholder="smtp.gmail.com"
+               aria-describedby="email-host-help">
+        <p id="email-host-help" class="mt-1 text-sm text-gray-500">
+            Your email provider's SMTP server address
+        </p>
+    </div>
+
+    <!-- Email Port & TLS -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <label for="email_port" class="block text-sm font-semibold text-gray-700 mb-2">
+                SMTP Port
+            </label>
+            <input type="number"
+                   id="email_port"
+                   name="email_port"
+                   value="{{ config.email_port|default:587 }}"
+                   class="form-input"
+                   placeholder="587">
+            <p class="mt-1 text-sm text-gray-500">
+                Typically 587 (TLS) or 465 (SSL)
+            </p>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                Encryption
+            </label>
+            <div class="flex items-center space-x-6 mt-3">
+                <label class="inline-flex items-center">
+                    <input type="checkbox"
+                           id="email_use_tls"
+                           name="email_use_tls"
+                           {% if config.email_use_tls or not config.id %}checked{% endif %}
+                           class="rounded border-gray-300 text-primary focus:ring-primary h-5 w-5">
+                    <span class="ml-2 text-sm text-gray-700">Use TLS</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Credentials -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <label for="email_host_user" class="block text-sm font-semibold text-gray-700 mb-2">
+                SMTP Username
+            </label>
+            <input type="text"
+                   id="email_host_user"
+                   name="email_host_user"
+                   value="{{ config.email_host_user }}"
+                   class="form-input"
+                   autocomplete="username"
+                   placeholder="your-email@example.com">
+        </div>
+
+        <div>
+            <label for="email_host_password" class="block text-sm font-semibold text-gray-700 mb-2">
+                SMTP Password
+            </label>
+            <input type="password"
+                   id="email_host_password"
+                   name="email_host_password"
+                   class="form-input"
+                   autocomplete="current-password"
+                   placeholder="••••••••">
+            <p class="mt-1 text-sm text-gray-500">
+                Password is encrypted before storage
+            </p>
+        </div>
+    </div>
+
+    <!-- From Address -->
+    <div>
+        <label for="email_from_address" class="block text-sm font-semibold text-gray-700 mb-2">
+            From Email Address
+        </label>
+        <input type="email"
+               id="email_from_address"
+               name="email_from_address"
+               value="{{ config.email_from_address }}"
+               class="form-input"
+               placeholder="noreply@yourdepartment.org"
+               aria-describedby="from-email-help">
+        <p id="from-email-help" class="mt-1 text-sm text-gray-500">
+            This address will appear as the sender for system emails
+        </p>
+    </div>
+
+    <!-- Test Connection (Future Enhancement) -->
+    <div class="border-t border-gray-200 pt-4">
+        <button type="button"
+                class="btn-secondary"
+                onclick="alert('Email test functionality will be available in the next update.')"
+                aria-label="Test email connection">
+            Test Email Connection
+        </button>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,110 @@
+version: '3.8'
+
+# The Logbook - Unraid Optimized Docker Compose
+# This compose file is optimized for Unraid servers with proper path mappings
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: logbook_db
+    restart: unless-stopped
+    volumes:
+      # Map to Unraid array for redundancy
+      - /mnt/user/appdata/logbook/database:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-logbook_db}
+      - POSTGRES_USER=${POSTGRES_USER:-logbook_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - TZ=${TZ:-America/New_York}
+    networks:
+      - logbook_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-logbook_user} -d ${POSTGRES_DB:-logbook_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    labels:
+      - "net.unraid.docker.icon=https://raw.githubusercontent.com/thegspiro/The-Logbook-v2/main/unraid/database-icon.png"
+      - "net.unraid.docker.managed=composeman"
+      - "net.unraid.docker.webui="
+
+  onboarding:
+    build:
+      context: ../services/onboarding
+      dockerfile: Dockerfile
+    image: logbook_onboarding:latest
+    container_name: logbook_onboarding
+    restart: unless-stopped
+    volumes:
+      # Use Unraid paths for better integration
+      - /mnt/user/appdata/logbook/app:/app
+      - /mnt/user/appdata/logbook/static:/app/staticfiles
+      - /mnt/user/appdata/logbook/media:/app/media
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    environment:
+      # Django Settings
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-*}
+
+      # Database Connection
+      - POSTGRES_DB=${POSTGRES_DB:-logbook_db}
+      - POSTGRES_USER=${POSTGRES_USER:-logbook_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+
+      # Application Settings
+      - APP_NAME=${APP_NAME:-The Logbook}
+      - PRIMARY_COLOR=${PRIMARY_COLOR:-#DC2626}
+      - SECONDARY_COLOR=${SECONDARY_COLOR:-#1F2937}
+      - TZ=${TZ:-America/New_York}
+
+      # Storage Settings (default to local for Unraid)
+      - DEFAULT_STORAGE_BACKEND=${DEFAULT_STORAGE_BACKEND:-local}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - logbook_network
+    labels:
+      - "net.unraid.docker.icon=https://raw.githubusercontent.com/thegspiro/The-Logbook-v2/main/unraid/logbook-icon.png"
+      - "net.unraid.docker.managed=composeman"
+      - "net.unraid.docker.webui=http://[IP]:[PORT:80]"
+
+  nginx:
+    image: nginx:alpine
+    container_name: logbook_nginx
+    restart: unless-stopped
+    volumes:
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /mnt/user/appdata/logbook/static:/static:ro
+      - /mnt/user/appdata/logbook/media:/media:ro
+      # Uncomment for SSL certificates
+      # - /mnt/user/appdata/logbook/certs:/etc/nginx/certs:ro
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    depends_on:
+      - onboarding
+    networks:
+      - logbook_network
+    labels:
+      - "net.unraid.docker.icon=https://raw.githubusercontent.com/thegspiro/The-Logbook-v2/main/unraid/nginx-icon.png"
+      - "net.unraid.docker.managed=composeman"
+      - "net.unraid.docker.webui=http://[IP]:[PORT:80]"
+
+networks:
+  logbook_network:
+    driver: bridge
+    name: logbook_network
+
+# Note: Volumes are mapped to Unraid paths directly
+# /mnt/user/appdata/logbook/ - stores on cache drive (preferred for performance)
+# Data is protected by Unraid's parity system
+#
+# To change storage location:
+# - For cache-only: use /mnt/cache/appdata/logbook/
+# - For array-only: use /mnt/disk1/appdata/logbook/ (or disk2, disk3, etc.)
+# - For user share with cache: use /mnt/user/appdata/logbook/ (default, recommended)

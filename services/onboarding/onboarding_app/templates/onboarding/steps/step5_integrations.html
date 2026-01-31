@@ -1,0 +1,79 @@
+{% extends 'onboarding/steps/step_base.html' %}
+
+{% block step_description %}
+Connect external services and integrations (optional - can be configured later).
+{% endblock %}
+
+{% block step_content %}
+<div class="space-y-6">
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <p class="text-sm text-blue-800">
+            <strong>Coming Soon:</strong> This section will allow you to integrate with external services like:
+        </p>
+        <ul class="mt-2 text-sm text-blue-800 space-y-1 ml-4 list-disc">
+            <li>CAD (Computer-Aided Dispatch) systems</li>
+            <li>Weather services for incident tracking</li>
+            <li>Training certification platforms</li>
+            <li>Equipment maintenance tracking</li>
+            <li>Third-party communication tools (Slack, Microsoft Teams)</li>
+        </ul>
+    </div>
+
+    <!-- Placeholder for future integrations -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+        <!-- CAD Integration -->
+        <div class="border-2 border-gray-200 rounded-lg p-4 opacity-50">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="font-semibold text-gray-900">CAD System</h3>
+                <span class="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">Coming Soon</span>
+            </div>
+            <p class="text-sm text-gray-600">
+                Automatically import incident data from your dispatch system
+            </p>
+        </div>
+
+        <!-- Weather Service -->
+        <div class="border-2 border-gray-200 rounded-lg p-4 opacity-50">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="font-semibold text-gray-900">Weather Data</h3>
+                <span class="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">Coming Soon</span>
+            </div>
+            <p class="text-sm text-gray-600">
+                Include weather conditions in incident reports
+            </p>
+        </div>
+
+        <!-- Training Platform -->
+        <div class="border-2 border-gray-200 rounded-lg p-4 opacity-50">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="font-semibold text-gray-900">Training Platform</h3>
+                <span class="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">Coming Soon</span>
+            </div>
+            <p class="text-sm text-gray-600">
+                Sync certifications and training records
+            </p>
+        </div>
+
+        <!-- Communication Tools -->
+        <div class="border-2 border-gray-200 rounded-lg p-4 opacity-50">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="font-semibold text-gray-900">Notifications</h3>
+                <span class="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">Coming Soon</span>
+            </div>
+            <p class="text-sm text-gray-600">
+                Push notifications to Slack, Teams, or SMS
+            </p>
+        </div>
+    </div>
+
+    <div class="border-t border-gray-200 pt-6">
+        <h3 class="font-semibold text-gray-900 mb-2">Want to add an integration?</h3>
+        <p class="text-sm text-gray-600 mb-4">
+            The Logbook is open source! You can contribute integrations or request new ones on our GitHub repository.
+        </p>
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="btn-secondary inline-block text-sm">
+            View on GitHub &rarr;
+        </a>
+    </div>
+</div>
+{% endblock %}

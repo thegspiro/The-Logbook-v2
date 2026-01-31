@@ -1,0 +1,224 @@
+version: '3.8'
+
+# The Logbook - Raspberry Pi Optimized Docker Compose
+# This compose file is optimized for Raspberry Pi (ARM architecture)
+# with resource limits appropriate for different Pi models
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: logbook_db
+    restart: unless-stopped
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      # Optional: Mount custom PostgreSQL config
+      # - ./postgres-config/custom.conf:/etc/postgresql/postgresql.conf
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-logbook_db}
+      - POSTGRES_USER=${POSTGRES_USER:-logbook_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - TZ=${TZ:-America/New_York}
+    # Resource limits for Raspberry Pi
+    deploy:
+      resources:
+        limits:
+          # Adjust based on your Pi model:
+          # Pi 5 (8GB): 2048m
+          # Pi 4 (4GB): 1024m
+          # Pi 4 (2GB): 512m
+          # Pi 3B+ (1GB): 256m
+          memory: ${DB_MEMORY_LIMIT:-512m}
+        reservations:
+          memory: ${DB_MEMORY_RESERVE:-128m}
+    # Optimize PostgreSQL for ARM and limited resources
+    command: >
+      postgres
+      -c shared_buffers=${PG_SHARED_BUFFERS:-256MB}
+      -c effective_cache_size=${PG_CACHE_SIZE:-1GB}
+      -c work_mem=${PG_WORK_MEM:-16MB}
+      -c maintenance_work_mem=${PG_MAINT_WORK_MEM:-128MB}
+      -c max_connections=${PG_MAX_CONNECTIONS:-20}
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c min_wal_size=1GB
+      -c max_wal_size=4GB
+    shm_size: ${PG_SHM_SIZE:-256mb}
+    networks:
+      - logbook_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-logbook_user} -d ${POSTGRES_DB:-logbook_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Reduce log size on Raspberry Pi
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  onboarding:
+    build:
+      context: ../services/onboarding
+      dockerfile: Dockerfile
+    image: logbook_onboarding:latest
+    container_name: logbook_onboarding
+    restart: unless-stopped
+    volumes:
+      - app_data:/app
+      - static_data:/app/staticfiles
+      - media_data:/app/media
+    environment:
+      # Django Settings
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-*}
+
+      # Database Connection
+      - POSTGRES_DB=${POSTGRES_DB:-logbook_db}
+      - POSTGRES_USER=${POSTGRES_USER:-logbook_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+
+      # Application Settings
+      - APP_NAME=${APP_NAME:-The Logbook}
+      - PRIMARY_COLOR=${PRIMARY_COLOR:-#DC2626}
+      - SECONDARY_COLOR=${SECONDARY_COLOR:-#1F2937}
+      - TZ=${TZ:-America/New_York}
+
+      # Gunicorn Workers (adjust for Pi model)
+      # Pi 5: 4-6 workers
+      # Pi 4 (4GB): 3-4 workers
+      # Pi 4 (2GB): 2 workers
+      # Pi 3B+: 1-2 workers
+      - GUNICORN_WORKERS=${GUNICORN_WORKERS:-2}
+      - GUNICORN_THREADS=${GUNICORN_THREADS:-2}
+      - GUNICORN_TIMEOUT=${GUNICORN_TIMEOUT:-120}
+
+      # Storage Settings
+      - DEFAULT_STORAGE_BACKEND=${DEFAULT_STORAGE_BACKEND:-local}
+    # Resource limits for Raspberry Pi
+    deploy:
+      resources:
+        limits:
+          # Adjust based on your Pi model:
+          # Pi 5 (8GB): 2048m
+          # Pi 4 (4GB): 1024m
+          # Pi 4 (2GB): 512m
+          # Pi 3B+ (1GB): 256m
+          memory: ${APP_MEMORY_LIMIT:-512m}
+        reservations:
+          memory: ${APP_MEMORY_RESERVE:-256m}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - logbook_network
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    # Reduce log size
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  nginx:
+    image: nginx:alpine
+    container_name: logbook_nginx
+    restart: unless-stopped
+    volumes:
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_data:/static:ro
+      - media_data:/media:ro
+      # Uncomment for SSL certificates
+      # - ssl_certs:/etc/nginx/certs:ro
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    # Resource limits (nginx is lightweight)
+    deploy:
+      resources:
+        limits:
+          memory: ${NGINX_MEMORY_LIMIT:-128m}
+        reservations:
+          memory: 32m
+    depends_on:
+      - onboarding
+    networks:
+      - logbook_network
+    # Reduce log size
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  logbook_network:
+    driver: bridge
+    name: logbook_network
+
+volumes:
+  db_data:
+    name: logbook_db_data
+  app_data:
+    name: logbook_app_data
+  static_data:
+    name: logbook_static_data
+  media_data:
+    name: logbook_media_data
+  # ssl_certs:
+  #   name: logbook_ssl_certs
+
+# Raspberry Pi Optimization Notes:
+# ================================
+#
+# Pi Model Recommendations:
+# -------------------------
+# Raspberry Pi 5 (8GB):
+#   DB_MEMORY_LIMIT=2048m
+#   APP_MEMORY_LIMIT=2048m
+#   GUNICORN_WORKERS=4-6
+#   PG_SHARED_BUFFERS=2GB
+#   PG_CACHE_SIZE=6GB
+#
+# Raspberry Pi 4 (4GB):
+#   DB_MEMORY_LIMIT=1024m
+#   APP_MEMORY_LIMIT=1024m
+#   GUNICORN_WORKERS=3-4
+#   PG_SHARED_BUFFERS=1GB
+#   PG_CACHE_SIZE=3GB
+#
+# Raspberry Pi 4 (2GB):
+#   DB_MEMORY_LIMIT=512m
+#   APP_MEMORY_LIMIT=512m
+#   GUNICORN_WORKERS=2
+#   PG_SHARED_BUFFERS=256MB
+#   PG_CACHE_SIZE=1GB
+#
+# Raspberry Pi 3B+ (1GB):
+#   DB_MEMORY_LIMIT=256m
+#   APP_MEMORY_LIMIT=256m
+#   GUNICORN_WORKERS=1-2
+#   PG_SHARED_BUFFERS=128MB
+#   PG_CACHE_SIZE=512MB
+#
+# Important for ARM:
+# ------------------
+# - All images are multi-arch and support ARM64
+# - PostgreSQL uses Alpine for smaller size
+# - Resource limits prevent OOM on small Pis
+# - Reduced logging to save SD card/SSD wear
+# - Optimized PostgreSQL settings for ARM CPU
+#
+# Performance Tips:
+# -----------------
+# - Use SSD instead of SD card (5-10x faster)
+# - Enable swap (2-4GB) for low-RAM models
+# - Use wired ethernet (more stable than WiFi)
+# - Add heatsink or fan to prevent throttling
+# - Monitor temperature: vcgencmd measure_temp
+# - Use quality power supply (official recommended)
+#
+# To deploy:
+# ----------
+# docker-compose -f raspberry-pi/docker-compose.pi.yml up -d
